@@ -51,25 +51,13 @@ class Lexer
 
     case @character
     when '='
-      next_char = peak_char
-      if next_char == '='
-        token = { token: TOKENS[:EQUAL], literal: @character + next_char }
-        read_char
-      else
-        token = { token: TOKENS[:ASSIGN], literal: @character }
-      end
+      token = tokenize_equal_sign
     when '+'
       token = { token: TOKENS[:PLUS], literal: @character }
     when '-'
       token = { token: TOKENS[:MINUS], literal: @character }
     when '!'
-      next_char = peak_char
-      if next_char == '='
-        token = { token: TOKENS[:NOT_EQUAL], literal: @character + next_char }
-        read_char
-      else
-        token = { token: TOKENS[:BANG], literal: @character }
-      end
+      token = tokenize_bang_sign
     when '*'
       token = { token: TOKENS[:ASTERISK], literal: @character }
     when '/'
@@ -93,16 +81,7 @@ class Lexer
     when nil
       token = { token: TOKENS[:EOF], literal: @character }
     else
-      if @character.match?(/[A-Za-z_]/)
-        identifier = read_pattern(/[A-Za-z_]/)
-        token_key = KEYWORDS[identifier] || :IDENT
-
-        return { token: TOKENS[token_key], literal: identifier }
-      elsif @character.match?(/[0-9]/)
-        number = read_pattern(/[0-9]/)
-
-        return { token: TOKENS[:INT], literal: number.to_i }
-      end
+      return tokenize_identifier
     end
 
     read_char
@@ -110,6 +89,43 @@ class Lexer
   end
 
   private
+
+  def tokenize_equal_sign
+    next_char = peak_char
+    if next_char == '='
+      token = { token: TOKENS[:EQUAL], literal: @character + next_char }
+      read_char
+    else
+      token = { token: TOKENS[:ASSIGN], literal: @character }
+    end
+
+    token
+  end
+
+  def tokenize_bang_sign
+    next_char = peak_char
+    if next_char == '='
+      token = { token: TOKENS[:NOT_EQUAL], literal: @character + next_char }
+      read_char
+    else
+      token = { token: TOKENS[:BANG], literal: @character }
+    end
+
+    token
+  end
+
+  def tokenize_identifier
+    if @character.match?(/[A-Za-z_]/)
+      identifier = read_pattern(/[A-Za-z_]/)
+      token_key = KEYWORDS[identifier] || :IDENT
+
+      { token: TOKENS[token_key], literal: identifier }
+    elsif @character.match?(/[0-9]/)
+      number = read_pattern(/[0-9]/)
+
+      { token: TOKENS[:INT], literal: number.to_i }
+    end
+  end
 
   def read_char
     if @read_position.nil? || @read_position >= @source_code.size
