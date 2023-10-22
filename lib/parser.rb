@@ -3,6 +3,7 @@
 require 'ast/program'
 require 'ast/let_statement'
 require 'ast/identifier'
+require 'ast/return_statement'
 
 class Parser
   attr_reader :program, :errors
@@ -35,6 +36,8 @@ class Parser
     case @current_token[:token]
     when 'LET'
       parse_let_statement
+    when 'RETURN'
+      parse_return_statement
     end
   end
 
@@ -52,6 +55,16 @@ class Parser
     next_token while @current_token[:token] != ';'
 
     Ast::LetStatement.new(token, ident_node, nil)
+  end
+
+  def parse_return_statement
+    token = @current_token
+
+    # expression_node = parse_expression
+
+    next_token while @current_token[:token] != ';'
+
+    Ast::ReturnStatement.new(token, nil)
   end
 
   def parse_expression; end

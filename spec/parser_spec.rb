@@ -49,4 +49,25 @@ RSpec.describe Parser do
       expect(errors.last).to eql('expected next token to be IDENT, got = instead')
     end
   end
+
+  context 'when parser a valid return statement' do
+    let(:input) do
+      <<-TEXT
+        return 5;
+        return 10;
+      TEXT
+    end
+
+    it 'expects the return statement to parsed correctly' do
+      parser.parse_program
+
+      statements = parser.program.statements
+
+      expect(statements.first.token).to eql({ token: 'RETURN', literal: 'return' })
+      expect(statements.first.expression).to be_nil
+
+      expect(statements.last.token).to eql({ token: 'RETURN', literal: 'return' })
+      expect(statements.first.expression).to be_nil
+    end
+  end
 end
