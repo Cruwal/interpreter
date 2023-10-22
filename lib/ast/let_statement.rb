@@ -6,10 +6,10 @@ module Ast
 
     attr_reader :token, :identifier, :expression
 
-    def initialize(token, identifier, experession)
+    def initialize(token, identifier, expression)
       @token = token
       @identifier = identifier
-      @experession = experession
+      @expression = expression
     end
 
     def statement_node; end
