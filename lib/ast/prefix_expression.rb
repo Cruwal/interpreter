@@ -4,7 +4,7 @@ module Ast
   class PrefixExpression
     include Expression
 
-    attr_reader :token, :identifier, :right
+    attr_reader :token, :operator, :right
 
     def initialize(token, operator, right)
       @token = token

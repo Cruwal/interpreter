@@ -4,7 +4,7 @@ module Ast
   class IntegerLiteral
     include Expression
 
-    attr_reader :token, :identifier, :expression
+    attr_reader :token, :value
 
     def initialize(token, value)
       @token = token

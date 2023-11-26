@@ -4,7 +4,7 @@ module Ast
   class InfixExpression
     include Expression
 
-    attr_reader :token, :identifier, :expression
+    attr_reader :token, :left, :operator, :right
 
     def initialize(token, left, operator, right)
       @token = token
