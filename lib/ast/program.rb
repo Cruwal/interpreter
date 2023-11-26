@@ -13,5 +13,9 @@ module Ast
         ''
       end
     end
+
+    def debug
+      statements.map(&:debug)
+    end
   end
 end

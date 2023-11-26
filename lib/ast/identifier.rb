@@ -14,7 +14,11 @@ module Ast
     def expression_node; end
 
     def token_literal
-      @token.literal
+      @token[:literal]
+    end
+
+    def debug
+      @token[:literal]
     end
   end
 end

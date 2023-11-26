@@ -16,5 +16,9 @@ module Ast
     def token_literal
       @token.literal
     end
+
+    def debug
+      "#{@token[:literal]} #{@expression&.debug};"
+    end
   end
 end
