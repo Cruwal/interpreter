@@ -4,9 +4,52 @@ require 'ast/program'
 require 'ast/let_statement'
 require 'ast/identifier'
 require 'ast/return_statement'
+require 'ast/expression_statement'
+require 'ast/integer_literal'
+require 'ast/prefix_expression'
+require 'ast/infix_expression'
 
 class Parser
   attr_reader :program, :errors
+
+  PRECEDENCE = {
+    lowest: 1,
+    equals: 2,
+    lessgreater: 3,
+    sum: 4,
+    product: 5,
+    prefix: 6,
+    call: 7
+  }.freeze
+
+  PREFIX_FUNCTIONS = {
+    IDENT: :parse_identifier,
+    INT: :parse_integer_literal,
+    BANG: :parse_prefix_expression,
+    MINUS: :parse_prefix_expression
+  }.freeze
+
+  INFIX_FUNCTIONS = {
+    EQ: :parse_infix_expression,
+    NOT_EQ: :parse_infix_expression,
+    LT: :parse_infix_expression,
+    GT: :parse_infix_expression,
+    PLUS: :parse_infix_expression,
+    MINUS: :parse_infix_expression,
+    SLASH: :parse_infix_expression,
+    ASTERISK: :parse_infix_expression
+  }.freeze
+
+  INFIX_PRECEDENCES = {
+    EQ: PRECEDENCE[:equals],
+    NOT_EQ: PRECEDENCE[:equals],
+    LT: PRECEDENCE[:lessgreater],
+    GT: PRECEDENCE[:lessgreater],
+    PLUS: PRECEDENCE[:SUM],
+    MINUS: PRECEDENCE[:SUM],
+    SLASH: PRECEDENCE[:PRODUCT],
+    ASTERISK: PRECEDENCE[:PRODUCT]
+  }.freeze
 
   def initialize(lexer)
     @lexer = lexer
@@ -38,6 +81,8 @@ class Parser
       parse_let_statement
     when 'RETURN'
       parse_return_statement
+    else
+      parse_expression_statement
     end
   end
 
@@ -67,7 +112,65 @@ class Parser
     Ast::ReturnStatement.new(token, nil)
   end
 
-  def parse_expression; end
+  def parse_expression_statement
+    token = @current_token
+    expression = parse_expression(PRECEDENCE[:lowest])
+
+    next_token if @peek_token[:token] == ';'
+
+    Ast::ExpressionStatement.new(token, expression)
+  end
+
+  def parse_expression(precedence)
+    prefix = PREFIX_FUNCTIONS[@current_token[:token].to_sym]
+    return nil if prefix.nil?
+
+    left_expression = send(prefix)
+
+    while @peek_token[:token] != ';' && precedence < peek_precedence
+      infix = INFIX_FUNCTIONS[@peek_token[:token].to_sym]
+      return left if infix.nil?
+
+      next_token
+
+      left_expression = send(infix, left_expression)
+    end
+
+    left_expression
+  end
+
+  def parse_identifier
+    Ast::Identifier.new(@current_token, @current_token[:literal])
+  end
+
+  def parse_integer_literal
+    Ast::IntegerLiteral.new(@current_token, @current_token[:literal].to_f)
+  end
+
+  def parse_prefix_expression
+    current_token = @current_token
+    next_token
+
+    Ast::PrefixExpression.new(current_token, current_token[:literal], parse_expression(:prefix))
+  end
+
+  def parse_infix_expression(left_expression)
+    current_token = @current_token
+
+    # TODO: Validate precedence format
+    precedence = current_precedence
+    next_token
+
+    Ast::InfixExpression.new(current_token, left_expression, current_token[:literal], parse_expression(precedence))
+  end
+
+  def current_precedence
+    INFIX_PRECEDENCES[@current_token[:token].to_sym] || PRECEDENCE[:lowest]
+  end
+
+  def peek_precedence
+    INFIX_PRECEDENCES[@peek_token[:token].to_sym] || PRECEDENCE[:lowest]
+  end
 
   def peek_error(type)
     @errors << "expected next token to be #{type}, got #{@peek_token[:token]} instead"
