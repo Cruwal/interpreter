@@ -30,8 +30,8 @@ class Parser
   }.freeze
 
   INFIX_FUNCTIONS = {
-    EQ: :parse_infix_expression,
-    NOT_EQ: :parse_infix_expression,
+    EQUAL: :parse_infix_expression,
+    NOT_EQUAL: :parse_infix_expression,
     LT: :parse_infix_expression,
     GT: :parse_infix_expression,
     PLUS: :parse_infix_expression,
@@ -41,8 +41,8 @@ class Parser
   }.freeze
 
   INFIX_PRECEDENCES = {
-    EQ: PRECEDENCE[:equals],
-    NOT_EQ: PRECEDENCE[:equals],
+    EQUAL: PRECEDENCE[:equals],
+    NOT_EQUAL: PRECEDENCE[:equals],
     LT: PRECEDENCE[:lessgreater],
     GT: PRECEDENCE[:lessgreater],
     PLUS: PRECEDENCE[:SUM],
@@ -63,7 +63,7 @@ class Parser
   end
 
   def parse_program
-    while @current_token[:token] != 'EOF'
+    while @current_token[:token] != :EOF
       statement = parse_statement
       @program.statements << statement unless statement.nil?
 
@@ -77,9 +77,9 @@ class Parser
 
   def parse_statement
     case @current_token[:token]
-    when 'LET'
+    when :LET
       parse_let_statement
-    when 'RETURN'
+    when :RETURN
       parse_return_statement
     else
       parse_expression_statement
@@ -89,15 +89,15 @@ class Parser
   def parse_let_statement
     token = @current_token
 
-    return nil unless expect_peek('IDENT')
+    return nil unless expect_peek(:IDENT)
 
     ident_node = Ast::Identifier.new(@current_token, @current_token[:literal])
 
-    return nil unless expect_peek('=')
+    return nil unless expect_peek(:ASSIGN)
 
     # expression_node = parse_expression
 
-    next_token while @current_token[:token] != ';'
+    next_token while @current_token[:token] != :SEMICOLON
 
     Ast::LetStatement.new(token, ident_node, nil)
   end
@@ -107,7 +107,7 @@ class Parser
 
     # expression_node = parse_expression
 
-    next_token while @current_token[:token] != ';'
+    next_token while @current_token[:token] != :SEMICOLON
 
     Ast::ReturnStatement.new(token, nil)
   end
@@ -116,7 +116,7 @@ class Parser
     token = @current_token
     expression = parse_expression(PRECEDENCE[:lowest])
 
-    next_token if @peek_token[:token] == ';'
+    next_token if @peek_token[:token] == :SEMICOLON
 
     Ast::ExpressionStatement.new(token, expression)
   end
@@ -127,7 +127,7 @@ class Parser
 
     left_expression = send(prefix)
 
-    while @peek_token[:token] != ';' && precedence < peek_precedence
+    while @peek_token[:token] != :SEMICOLON && precedence < peek_precedence
       infix = INFIX_FUNCTIONS[@peek_token[:token].to_sym]
       return left if infix.nil?
 

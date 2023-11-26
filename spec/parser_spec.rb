@@ -19,13 +19,13 @@ RSpec.describe Parser do
 
     statements = parser.program.statements
 
-    expect(statements.first.token).to eql({ token: 'LET', literal: 'let' })
-    expect(statements.first.identifier.token).to eql({ token: 'IDENT', literal: 'five' })
+    expect(statements.first.token).to eql({ token: :LET, literal: 'let' })
+    expect(statements.first.identifier.token).to eql({ token: :IDENT, literal: 'five' })
     expect(statements.first.identifier.value).to eql('five')
     expect(statements.first.expression).to be_nil
 
-    expect(statements.last.token).to eql({ token: 'LET', literal: 'let' })
-    expect(statements.last.identifier.token).to eql({ token: 'IDENT', literal: 'ten' })
+    expect(statements.last.token).to eql({ token: :LET, literal: 'let' })
+    expect(statements.last.identifier.token).to eql({ token: :IDENT, literal: 'ten' })
     expect(statements.last.identifier.value).to eql('ten')
     expect(statements.first.expression).to be_nil
   end
@@ -45,8 +45,8 @@ RSpec.describe Parser do
       errors = parser.errors
 
       # expect(statements).to be_empty
-      expect(errors.first).to eql('expected next token to be =, got INT instead')
-      expect(errors.last).to eql('expected next token to be IDENT, got = instead')
+      expect(errors.first).to eql('expected next token to be ASSIGN, got INT instead')
+      expect(errors.last).to eql('expected next token to be IDENT, got ASSIGN instead')
     end
   end
 
@@ -63,10 +63,10 @@ RSpec.describe Parser do
 
       statements = parser.program.statements
 
-      expect(statements.first.token).to eql({ token: 'RETURN', literal: 'return' })
+      expect(statements.first.token).to eql({ token: :RETURN, literal: 'return' })
       expect(statements.first.expression).to be_nil
 
-      expect(statements.last.token).to eql({ token: 'RETURN', literal: 'return' })
+      expect(statements.last.token).to eql({ token: :RETURN, literal: 'return' })
       expect(statements.first.expression).to be_nil
     end
   end
@@ -83,7 +83,7 @@ RSpec.describe Parser do
 
       statements = parser.program.statements
 
-      expect(statements.first.token).to eql({ token: 'IDENT', literal: 'identifier' })
+      expect(statements.first.token).to eql({ token: :IDENT, literal: 'identifier' })
     end
   end
 
@@ -99,7 +99,7 @@ RSpec.describe Parser do
 
       statements = parser.program.statements
 
-      expect(statements.first.token).to eql({ token: 'INT', literal: 5 })
+      expect(statements.first.token).to eql({ token: :INT, literal: 5 })
     end
   end
 
@@ -114,10 +114,10 @@ RSpec.describe Parser do
       parser.parse_program
 
       statements = parser.program.statements
-      expect(statements.first.token).to eql({ token: '-', literal: '-' })
-      expect(statements[1].token).to eql({ token: 'IDENT', literal: 'a' })
-      expect(statements[2].token).to eql({ token: '*', literal: '*' })
-      expect(statements.last.token).to eql({ token: 'IDENT', literal: 'b' })
+      expect(statements.first.token).to eql({ token: :MINUS, literal: '-' })
+      expect(statements[1].token).to eql({ token: :IDENT, literal: 'a' })
+      expect(statements[2].token).to eql({ token: :ASTERISK, literal: '*' })
+      expect(statements.last.token).to eql({ token: :IDENT, literal: 'b' })
     end
   end
 end

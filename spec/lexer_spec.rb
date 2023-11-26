@@ -7,30 +7,30 @@ RSpec.describe Lexer do
   let(:input) { '=+-!*<>(){},;' }
 
   it 'should return the correct tokens' do
-    expect(lexer.next_token).to eql(token: '=', literal: '=')
-    expect(lexer.next_token).to eql(token: '+', literal: '+')
-    expect(lexer.next_token).to eql(token: '-', literal: '-')
-    expect(lexer.next_token).to eql(token: '!', literal: '!')
-    expect(lexer.next_token).to eql(token: '*', literal: '*')
-    expect(lexer.next_token).to eql(token: '<', literal: '<')
-    expect(lexer.next_token).to eql(token: '>', literal: '>')
-    expect(lexer.next_token).to eql(token: '(', literal: '(')
-    expect(lexer.next_token).to eql(token: ')', literal: ')')
-    expect(lexer.next_token).to eql(token: '{', literal: '{')
-    expect(lexer.next_token).to eql(token: '}', literal: '}')
-    expect(lexer.next_token).to eql(token: ',', literal: ',')
-    expect(lexer.next_token).to eql(token: ';', literal: ';')
-    expect(lexer.next_token).to eql(token: 'EOF', literal: nil)
+    expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+    expect(lexer.next_token).to eql(token: :PLUS, literal: '+')
+    expect(lexer.next_token).to eql(token: :MINUS, literal: '-')
+    expect(lexer.next_token).to eql(token: :BANG, literal: '!')
+    expect(lexer.next_token).to eql(token: :ASTERISK, literal: '*')
+    expect(lexer.next_token).to eql(token: :LT, literal: '<')
+    expect(lexer.next_token).to eql(token: :GT, literal: '>')
+    expect(lexer.next_token).to eql(token: :LPAREN, literal: '(')
+    expect(lexer.next_token).to eql(token: :RPAREN, literal: ')')
+    expect(lexer.next_token).to eql(token: :LBRACE, literal: '{')
+    expect(lexer.next_token).to eql(token: :RBRACE, literal: '}')
+    expect(lexer.next_token).to eql(token: :COMMA, literal: ',')
+    expect(lexer.next_token).to eql(token: :SEMICOLON, literal: ';')
+    expect(lexer.next_token).to eql(token: :EOF, literal: nil)
   end
 
   context 'when input has identifier' do
     let(:input) { 'let five = 5;' }
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'five')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 5)
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'five')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :INT, literal: 5)
     end
   end
 
@@ -38,10 +38,10 @@ RSpec.describe Lexer do
     let(:input) { 'let five = 512321;' }
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'five')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 512_321)
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'five')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :INT, literal: 512_321)
     end
   end
 
@@ -49,10 +49,10 @@ RSpec.describe Lexer do
     let(:input) { 'let           five       =         512321       ;         ' }
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'five')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 512_321)
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'five')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :INT, literal: 512_321)
     end
   end
 
@@ -60,10 +60,10 @@ RSpec.describe Lexer do
     let(:input) { 'let five=512321;' }
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'five')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 512_321)
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'five')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :INT, literal: 512_321)
     end
   end
 
@@ -80,43 +80,43 @@ RSpec.describe Lexer do
     end
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'five')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 5)
-      expect(lexer.next_token).to eql(token: ';', literal: ';')
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'ten')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 10)
-      expect(lexer.next_token).to eql(token: ';', literal: ';')
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'add')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'FUNCTION', literal: 'fn')
-      expect(lexer.next_token).to eql(token: '(', literal: '(')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'x')
-      expect(lexer.next_token).to eql(token: ',', literal: ',')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'y')
-      expect(lexer.next_token).to eql(token: ')', literal: ')')
-      expect(lexer.next_token).to eql(token: '{', literal: '{')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'x')
-      expect(lexer.next_token).to eql(token: '+', literal: '+')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'y')
-      expect(lexer.next_token).to eql(token: ';', literal: ';')
-      expect(lexer.next_token).to eql(token: '}', literal: '}')
-      expect(lexer.next_token).to eql(token: ';', literal: ';')
-      expect(lexer.next_token).to eql(token: 'LET', literal: 'let')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'result')
-      expect(lexer.next_token).to eql(token: '=', literal: '=')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'add')
-      expect(lexer.next_token).to eql(token: '(', literal: '(')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'five')
-      expect(lexer.next_token).to eql(token: ',', literal: ',')
-      expect(lexer.next_token).to eql(token: 'IDENT', literal: 'ten')
-      expect(lexer.next_token).to eql(token: ')', literal: ')')
-      expect(lexer.next_token).to eql(token: ';', literal: ';')
-      expect(lexer.next_token).to eql(token: 'EOF', literal: nil)
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'five')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :INT, literal: 5)
+      expect(lexer.next_token).to eql(token: :SEMICOLON, literal: ';')
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'ten')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :INT, literal: 10)
+      expect(lexer.next_token).to eql(token: :SEMICOLON, literal: ';')
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'add')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :FUNCTION, literal: 'fn')
+      expect(lexer.next_token).to eql(token: :LPAREN, literal: '(')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'x')
+      expect(lexer.next_token).to eql(token: :COMMA, literal: ',')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'y')
+      expect(lexer.next_token).to eql(token: :RPAREN, literal: ')')
+      expect(lexer.next_token).to eql(token: :LBRACE, literal: '{')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'x')
+      expect(lexer.next_token).to eql(token: :PLUS, literal: '+')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'y')
+      expect(lexer.next_token).to eql(token: :SEMICOLON, literal: ';')
+      expect(lexer.next_token).to eql(token: :RBRACE, literal: '}')
+      expect(lexer.next_token).to eql(token: :SEMICOLON, literal: ';')
+      expect(lexer.next_token).to eql(token: :LET, literal: 'let')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'result')
+      expect(lexer.next_token).to eql(token: :ASSIGN, literal: '=')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'add')
+      expect(lexer.next_token).to eql(token: :LPAREN, literal: '(')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'five')
+      expect(lexer.next_token).to eql(token: :COMMA, literal: ',')
+      expect(lexer.next_token).to eql(token: :IDENT, literal: 'ten')
+      expect(lexer.next_token).to eql(token: :RPAREN, literal: ')')
+      expect(lexer.next_token).to eql(token: :SEMICOLON, literal: ';')
+      expect(lexer.next_token).to eql(token: :EOF, literal: nil)
     end
   end
 
@@ -131,12 +131,12 @@ RSpec.describe Lexer do
     end
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'IF', literal: 'if')
-      expect(lexer.next_token).to eql(token: 'TRUE', literal: 'true')
-      expect(lexer.next_token).to eql(token: 'RETURN', literal: 'return')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 5)
-      expect(lexer.next_token).to eql(token: 'ELSE', literal: 'else')
-      expect(lexer.next_token).to eql(token: 'RETURN', literal: 'return')
+      expect(lexer.next_token).to eql(token: :IF, literal: 'if')
+      expect(lexer.next_token).to eql(token: :TRUE, literal: 'true')
+      expect(lexer.next_token).to eql(token: :RETURN, literal: 'return')
+      expect(lexer.next_token).to eql(token: :INT, literal: 5)
+      expect(lexer.next_token).to eql(token: :ELSE, literal: 'else')
+      expect(lexer.next_token).to eql(token: :RETURN, literal: 'return')
     end
   end
 
@@ -151,18 +151,18 @@ RSpec.describe Lexer do
     end
 
     it 'should return the the correct tokens' do
-      expect(lexer.next_token).to eql(token: 'IF', literal: 'if')
-      expect(lexer.next_token).to eql(token: 'TRUE', literal: 'true')
-      expect(lexer.next_token).to eql(token: '!=', literal: '!=')
-      expect(lexer.next_token).to eql(token: 'FALSE', literal: 'false')
-      expect(lexer.next_token).to eql(token: 'RETURN', literal: 'return')
-      expect(lexer.next_token).to eql(token: 'INT', literal: 5)
-      expect(lexer.next_token).to eql(token: 'ELSE', literal: 'else')
-      expect(lexer.next_token).to eql(token: 'TRUE', literal: 'true')
-      expect(lexer.next_token).to eql(token: '==', literal: '==')
-      expect(lexer.next_token).to eql(token: 'TRUE', literal: 'true')
-      expect(lexer.next_token).to eql(token: 'RETURN', literal: 'return')
-      expect(lexer.next_token).to eql(token: 'FALSE', literal: 'false')
+      expect(lexer.next_token).to eql(token: :IF, literal: 'if')
+      expect(lexer.next_token).to eql(token: :TRUE, literal: 'true')
+      expect(lexer.next_token).to eql(token: :NOT_EQUAL, literal: '!=')
+      expect(lexer.next_token).to eql(token: :FALSE, literal: 'false')
+      expect(lexer.next_token).to eql(token: :RETURN, literal: 'return')
+      expect(lexer.next_token).to eql(token: :INT, literal: 5)
+      expect(lexer.next_token).to eql(token: :ELSE, literal: 'else')
+      expect(lexer.next_token).to eql(token: :TRUE, literal: 'true')
+      expect(lexer.next_token).to eql(token: :EQUAL, literal: '==')
+      expect(lexer.next_token).to eql(token: :TRUE, literal: 'true')
+      expect(lexer.next_token).to eql(token: :RETURN, literal: 'return')
+      expect(lexer.next_token).to eql(token: :FALSE, literal: 'false')
     end
   end
 end

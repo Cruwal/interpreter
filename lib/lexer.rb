@@ -53,33 +53,33 @@ class Lexer
     when '='
       token = tokenize_equal_sign
     when '+'
-      token = { token: TOKENS[:PLUS], literal: @character }
+      token = { token: :PLUS, literal: @character }
     when '-'
-      token = { token: TOKENS[:MINUS], literal: @character }
+      token = { token: :MINUS, literal: @character }
     when '!'
       token = tokenize_bang_sign
     when '*'
-      token = { token: TOKENS[:ASTERISK], literal: @character }
+      token = { token: :ASTERISK, literal: @character }
     when '/'
-      token = { token: TOKENS[:SLASH], literal: @character }
+      token = { token: :SLASH, literal: @character }
     when '<'
-      token = { token: TOKENS[:LT], literal: @character }
+      token = { token: :LT, literal: @character }
     when '>'
-      token = { token: TOKENS[:GT], literal: @character }
+      token = { token: :GT, literal: @character }
     when ','
-      token = { token: TOKENS[:COMMA], literal: @character }
+      token = { token: :COMMA, literal: @character }
     when ';'
-      token = { token: TOKENS[:SEMICOLON], literal: @character }
+      token = { token: :SEMICOLON, literal: @character }
     when '('
-      token = { token: TOKENS[:LPAREN], literal: @character }
+      token = { token: :LPAREN, literal: @character }
     when ')'
-      token = { token: TOKENS[:RPAREN], literal: @character }
+      token = { token: :RPAREN, literal: @character }
     when '{'
-      token = { token: TOKENS[:LBRACE], literal: @character }
+      token = { token: :LBRACE, literal: @character }
     when '}'
-      token = { token: TOKENS[:RBRACE], literal: @character }
+      token = { token: :RBRACE, literal: @character }
     when nil
-      token = { token: TOKENS[:EOF], literal: @character }
+      token = { token: :EOF, literal: @character }
     else
       return tokenize_identifier
     end
@@ -93,10 +93,10 @@ class Lexer
   def tokenize_equal_sign
     next_char = peak_char
     if next_char == '='
-      token = { token: TOKENS[:EQUAL], literal: @character + next_char }
+      token = { token: :EQUAL, literal: @character + next_char }
       read_char
     else
-      token = { token: TOKENS[:ASSIGN], literal: @character }
+      token = { token: :ASSIGN, literal: @character }
     end
 
     token
@@ -105,10 +105,10 @@ class Lexer
   def tokenize_bang_sign
     next_char = peak_char
     if next_char == '='
-      token = { token: TOKENS[:NOT_EQUAL], literal: @character + next_char }
+      token = { token: :NOT_EQUAL, literal: @character + next_char }
       read_char
     else
-      token = { token: TOKENS[:BANG], literal: @character }
+      token = { token: :BANG, literal: @character }
     end
 
     token
@@ -119,11 +119,11 @@ class Lexer
       identifier = read_pattern(/[A-Za-z_]/)
       token_key = KEYWORDS[identifier] || :IDENT
 
-      { token: TOKENS[token_key], literal: identifier }
+      { token: token_key, literal: identifier }
     elsif @character.match?(/[0-9]/)
       number = read_pattern(/[0-9]/)
 
-      { token: TOKENS[:INT], literal: number.to_i }
+      { token: :INT, literal: number.to_i }
     end
   end
 
