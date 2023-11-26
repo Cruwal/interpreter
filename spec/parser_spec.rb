@@ -107,11 +107,13 @@ RSpec.describe Parser do
     it 'expects the return statement to parsed correctly' do
       program = parser.parse_program
       statements = program.statements
+      expression = statements.first.expression
 
-      expect(statements.first.token).to eql({ token: :MINUS, literal: '-' })
-      expect(statements[1].token).to eql({ token: :IDENT, literal: 'a' })
-      expect(statements[2].token).to eql({ token: :ASTERISK, literal: '*' })
-      expect(statements.last.token).to eql({ token: :IDENT, literal: 'b' })
+      expect(program.debug).to eql(['((-a) * b);'])
+      expect(expression.left.token).to eql({ token: :MINUS, literal: '-' })
+      expect(expression.left.right.token).to eql({ token: :IDENT, literal: 'a' })
+      expect(expression.operator).to eql('*')
+      expect(expression.right.token).to eql({ token: :IDENT, literal: 'b' })
     end
   end
 end

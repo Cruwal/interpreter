@@ -45,10 +45,10 @@ class Parser
     NOT_EQUAL: PRECEDENCE[:equals],
     LT: PRECEDENCE[:lessgreater],
     GT: PRECEDENCE[:lessgreater],
-    PLUS: PRECEDENCE[:SUM],
-    MINUS: PRECEDENCE[:SUM],
-    SLASH: PRECEDENCE[:PRODUCT],
-    ASTERISK: PRECEDENCE[:PRODUCT]
+    PLUS: PRECEDENCE[:sum],
+    MINUS: PRECEDENCE[:sum],
+    SLASH: PRECEDENCE[:product],
+    ASTERISK: PRECEDENCE[:product]
   }.freeze
 
   def initialize(lexer)
@@ -122,13 +122,13 @@ class Parser
   end
 
   def parse_expression(precedence)
-    prefix = PREFIX_FUNCTIONS[@current_token[:token].to_sym]
+    prefix = PREFIX_FUNCTIONS[@current_token[:token]]
     return nil if prefix.nil?
 
     left_expression = send(prefix)
 
     while @peek_token[:token] != :SEMICOLON && precedence < peek_precedence
-      infix = INFIX_FUNCTIONS[@peek_token[:token].to_sym]
+      infix = INFIX_FUNCTIONS[@peek_token[:token]]
       return left if infix.nil?
 
       next_token
@@ -151,13 +151,12 @@ class Parser
     current_token = @current_token
     next_token
 
-    Ast::PrefixExpression.new(current_token, current_token[:literal], parse_expression(:prefix))
+    Ast::PrefixExpression.new(current_token, current_token[:literal], parse_expression(PRECEDENCE[:prefix]))
   end
 
   def parse_infix_expression(left_expression)
     current_token = @current_token
 
-    # TODO: Validate precedence format
     precedence = current_precedence
     next_token
 
