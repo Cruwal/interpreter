@@ -15,9 +15,8 @@ RSpec.describe Parser do
   let(:tokens) { Lexer.new(input) }
 
   it 'expects the let statement to be parsed correctly' do
-    parser.parse_program
-
-    statements = parser.program.statements
+    program = parser.parse_program
+    statements = program.statements
 
     expect(statements.first.token).to eql({ token: :LET, literal: 'let' })
     expect(statements.first.identifier.token).to eql({ token: :IDENT, literal: 'five' })
@@ -40,8 +39,6 @@ RSpec.describe Parser do
 
     it 'expects the correct error messages' do
       parser.parse_program
-
-      statements = parser.program.statements
       errors = parser.errors
 
       # expect(statements).to be_empty
@@ -59,9 +56,8 @@ RSpec.describe Parser do
     end
 
     it 'expects the return statement to parsed correctly' do
-      parser.parse_program
-
-      statements = parser.program.statements
+      program = parser.parse_program
+      statements = program.statements
 
       expect(statements.first.token).to eql({ token: :RETURN, literal: 'return' })
       expect(statements.first.expression).to be_nil
@@ -79,9 +75,8 @@ RSpec.describe Parser do
     end
 
     it 'expects the return statement to parsed correctly' do
-      parser.parse_program
-
-      statements = parser.program.statements
+      program = parser.parse_program
+      statements = program.statements
 
       expect(statements.first.token).to eql({ token: :IDENT, literal: 'identifier' })
     end
@@ -95,9 +90,8 @@ RSpec.describe Parser do
     end
 
     it 'expects the return statement to parsed correctly' do
-      parser.parse_program
-
-      statements = parser.program.statements
+      program = parser.parse_program
+      statements = program.statements
 
       expect(statements.first.token).to eql({ token: :INT, literal: 5 })
     end
@@ -111,9 +105,9 @@ RSpec.describe Parser do
     end
 
     it 'expects the return statement to parsed correctly' do
-      parser.parse_program
+      program = parser.parse_program
+      statements = program.statements
 
-      statements = parser.program.statements
       expect(statements.first.token).to eql({ token: :MINUS, literal: '-' })
       expect(statements[1].token).to eql({ token: :IDENT, literal: 'a' })
       expect(statements[2].token).to eql({ token: :ASTERISK, literal: '*' })

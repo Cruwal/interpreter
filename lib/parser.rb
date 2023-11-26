@@ -70,7 +70,7 @@ class Parser
       next_token
     end
 
-    @statements
+    @program
   end
 
   private
