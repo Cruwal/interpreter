@@ -6,6 +6,7 @@ require 'ast/identifier'
 require 'ast/return_statement'
 require 'ast/expression_statement'
 require 'ast/integer_literal'
+require 'ast/boolean_literal'
 require 'ast/prefix_expression'
 require 'ast/infix_expression'
 
@@ -26,7 +27,9 @@ class Parser
     IDENT: :parse_identifier,
     INT: :parse_integer_literal,
     BANG: :parse_prefix_expression,
-    MINUS: :parse_prefix_expression
+    MINUS: :parse_prefix_expression,
+    TRUE: :parse_boolean_literal,
+    FALSE: :parse_boolean_literal
   }.freeze
 
   INFIX_FUNCTIONS = {
@@ -145,6 +148,10 @@ class Parser
 
   def parse_integer_literal
     Ast::IntegerLiteral.new(@current_token, @current_token[:literal].to_f)
+  end
+
+  def parse_boolean_literal
+    Ast::BooleanLiteral.new(@current_token, @current_token[:literal] == 'true')
   end
 
   def parse_prefix_expression

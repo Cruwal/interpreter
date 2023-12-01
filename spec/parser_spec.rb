@@ -116,4 +116,23 @@ RSpec.describe Parser do
       expect(expression.right.token).to eql({ token: :IDENT, literal: 'b' })
     end
   end
+
+  context 'when parser a valid expression' do
+    let(:input) do
+      <<-TEXT
+         false != true;
+      TEXT
+    end
+
+    it 'expects the return statement to parsed correctly' do
+      program = parser.parse_program
+      statements = program.statements
+      expression = statements.first.expression
+
+      expect(program.debug).to eql(['(false != true);'])
+      expect(expression.left.token).to eql({ token: :FALSE, literal: 'false' })
+      expect(expression.right.token).to eql({ token: :TRUE, literal: 'true' })
+      expect(expression.operator).to eql('!=')
+    end
+  end
 end
