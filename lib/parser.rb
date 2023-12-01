@@ -29,7 +29,8 @@ class Parser
     BANG: :parse_prefix_expression,
     MINUS: :parse_prefix_expression,
     TRUE: :parse_boolean_literal,
-    FALSE: :parse_boolean_literal
+    FALSE: :parse_boolean_literal,
+    LPAREN: :parse_grouped_expression
   }.freeze
 
   INFIX_FUNCTIONS = {
@@ -159,6 +160,16 @@ class Parser
     next_token
 
     Ast::PrefixExpression.new(current_token, current_token[:literal], parse_expression(PRECEDENCE[:prefix]))
+  end
+
+  def parse_grouped_expression
+    next_token
+
+    expression = parse_expression(PRECEDENCE[:lowest])
+
+    return nil unless expect_peek(:RPAREN)
+
+    expression
   end
 
   def parse_infix_expression(left_expression)

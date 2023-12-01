@@ -117,7 +117,7 @@ RSpec.describe Parser do
     end
   end
 
-  context 'when parser a valid expression' do
+  context 'when parser a valid boolean' do
     let(:input) do
       <<-TEXT
          false != true;
@@ -133,6 +133,20 @@ RSpec.describe Parser do
       expect(expression.left.token).to eql({ token: :FALSE, literal: 'false' })
       expect(expression.right.token).to eql({ token: :TRUE, literal: 'true' })
       expect(expression.operator).to eql('!=')
+    end
+  end
+
+  context 'when parser a valid grouped expression' do
+    let(:input) do
+      <<-TEXT
+         1 + (2 + 3) + 4;
+      TEXT
+    end
+
+    it 'expects the return statement to parsed correctly' do
+      program = parser.parse_program
+
+      expect(program.debug).to eql(['((1 + (2 + 3)) + 4);'])
     end
   end
 end
