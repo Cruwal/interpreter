@@ -149,4 +149,18 @@ RSpec.describe Parser do
       expect(program.debug).to eql(['((1 + (2 + 3)) + 4);'])
     end
   end
+
+  context 'when parser a valid if expression' do
+    let(:input) do
+      <<-TEXT
+        if (x < y) { x } else { y }
+      TEXT
+    end
+
+    it 'expects the return statement to parsed correctly' do
+      program = parser.parse_program
+
+      expect(program.debug).to eql(['if(x < y) ["x;"] else ["y;"];'])
+    end
+  end
 end

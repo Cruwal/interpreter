@@ -5,10 +5,12 @@ require 'ast/let_statement'
 require 'ast/identifier'
 require 'ast/return_statement'
 require 'ast/expression_statement'
+require 'ast/block_statement'
 require 'ast/integer_literal'
 require 'ast/boolean_literal'
 require 'ast/prefix_expression'
 require 'ast/infix_expression'
+require 'ast/if_expression'
 
 class Parser
   attr_reader :program, :errors
@@ -30,7 +32,8 @@ class Parser
     MINUS: :parse_prefix_expression,
     TRUE: :parse_boolean_literal,
     FALSE: :parse_boolean_literal,
-    LPAREN: :parse_grouped_expression
+    LPAREN: :parse_grouped_expression,
+    IF: :parse_if_expression
   }.freeze
 
   INFIX_FUNCTIONS = {
@@ -153,6 +156,45 @@ class Parser
 
   def parse_boolean_literal
     Ast::BooleanLiteral.new(@current_token, @current_token[:literal] == 'true')
+  end
+
+  def parse_if_expression
+    token = @current_token
+
+    return nil unless expect_peek(:LPAREN)
+
+    next_token
+    condition = parse_expression(PRECEDENCE[:lowest])
+
+    return nil unless expect_peek(:RPAREN)
+    return nil unless expect_peek(:LBRACE)
+
+    consequence = parse_block_statement
+
+    if @peek_token[:token] == :ELSE
+      next_token
+
+      return nil unless expect_peek(:LBRACE)
+
+      alternative = parse_block_statement
+    end
+
+    Ast::IfExpression.new(token, condition, consequence, alternative)
+  end
+
+  def parse_block_statement
+    token = @current_token
+    statements = []
+
+    next_token
+    while @current_token[:token] != :RBRACE && @current_token[:token] != :EOF
+      statement = parse_statement
+      statements << statement unless statement.nil?
+
+      next_token
+    end
+
+    Ast::BlockStatement.new(token, statements)
   end
 
   def parse_prefix_expression
