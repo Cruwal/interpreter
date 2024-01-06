@@ -107,21 +107,23 @@ class Parser
 
     return nil unless expect_peek(:ASSIGN)
 
-    # expression_node = parse_expression
+    next_token
+    expression_node = parse_expression(PRECEDENCE[:lowest])
 
     next_token while @current_token[:token] != :SEMICOLON
 
-    Ast::LetStatement.new(token, ident_node, nil)
+    Ast::LetStatement.new(token, ident_node, expression_node)
   end
 
   def parse_return_statement
     token = @current_token
 
-    # expression_node = parse_expression
+    next_token
+    expression_node = parse_expression(PRECEDENCE[:lowest])
 
     next_token while @current_token[:token] != :SEMICOLON
 
-    Ast::ReturnStatement.new(token, nil)
+    Ast::ReturnStatement.new(token, expression_node)
   end
 
   def parse_expression_statement

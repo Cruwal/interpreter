@@ -9,7 +9,7 @@ RSpec.describe Parser do
   let(:input) do
     <<-TEXT
       let five = 5;
-      let ten = 10;
+      let ten = 2 + 5;
     TEXT
   end
   let(:tokens) { Lexer.new(input) }
@@ -21,12 +21,14 @@ RSpec.describe Parser do
     expect(statements.first.token).to eql({ token: :LET, literal: 'let' })
     expect(statements.first.identifier.token).to eql({ token: :IDENT, literal: 'five' })
     expect(statements.first.identifier.value).to eql('five')
-    expect(statements.first.expression).to be_nil
+    expect(statements.first.expression.token).to eql({ token: :INT, literal: 5 })
 
     expect(statements.last.token).to eql({ token: :LET, literal: 'let' })
     expect(statements.last.identifier.token).to eql({ token: :IDENT, literal: 'ten' })
     expect(statements.last.identifier.value).to eql('ten')
-    expect(statements.first.expression).to be_nil
+    expect(statements.last.expression.left.token).to eql({ token: :INT, literal: 2 })
+    expect(statements.last.expression.operator).to eql('+')
+    expect(statements.last.expression.right.token).to eql({ token: :INT, literal: 5 })
   end
 
   context 'when provides an invalid let statement' do
@@ -41,7 +43,6 @@ RSpec.describe Parser do
       parser.parse_program
       errors = parser.errors
 
-      # expect(statements).to be_empty
       expect(errors.first).to eql('expected next token to be ASSIGN, got INT instead')
       expect(errors.last).to eql('expected next token to be IDENT, got ASSIGN instead')
     end
@@ -51,7 +52,7 @@ RSpec.describe Parser do
     let(:input) do
       <<-TEXT
         return 5;
-        return 10;
+        return 2 + 5;
       TEXT
     end
 
@@ -60,10 +61,12 @@ RSpec.describe Parser do
       statements = program.statements
 
       expect(statements.first.token).to eql({ token: :RETURN, literal: 'return' })
-      expect(statements.first.expression).to be_nil
+      expect(statements.first.expression.token).to eql({ token: :INT, literal: 5 })
 
       expect(statements.last.token).to eql({ token: :RETURN, literal: 'return' })
-      expect(statements.first.expression).to be_nil
+      expect(statements.last.expression.left.token).to eql({ token: :INT, literal: 2 })
+      expect(statements.last.expression.operator).to eql('+')
+      expect(statements.last.expression.right.token).to eql({ token: :INT, literal: 5 })
     end
   end
 
