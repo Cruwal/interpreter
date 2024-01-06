@@ -11,6 +11,7 @@ require 'ast/boolean_literal'
 require 'ast/prefix_expression'
 require 'ast/infix_expression'
 require 'ast/if_expression'
+require 'ast/function_literal'
 
 class Parser
   attr_reader :program, :errors
@@ -33,7 +34,8 @@ class Parser
     TRUE: :parse_boolean_literal,
     FALSE: :parse_boolean_literal,
     LPAREN: :parse_grouped_expression,
-    IF: :parse_if_expression
+    IF: :parse_if_expression,
+    FUNCTION: :parse_function_literal
   }.freeze
 
   INFIX_FUNCTIONS = {
@@ -158,6 +160,20 @@ class Parser
     Ast::BooleanLiteral.new(@current_token, @current_token[:literal] == 'true')
   end
 
+  def parse_function_literal
+    token = @current_token
+
+    return nil unless expect_peek(:LPAREN)
+
+    parameters = parse_function_parameters
+
+    return nil unless expect_peek(:LBRACE)
+
+    body = parse_block_statement
+
+    Ast::FunctionLiteral.new(token, parameters, body)
+  end
+
   def parse_if_expression
     token = @current_token
 
@@ -221,6 +237,28 @@ class Parser
     next_token
 
     Ast::InfixExpression.new(current_token, left_expression, current_token[:literal], parse_expression(precedence))
+  end
+
+  def parse_function_parameters
+    if @peek_token[:token] == :RPAREN
+      next_token
+      []
+    end
+
+    parameters = []
+    next_token
+    parameters << Ast::Identifier.new(@current_token, @current_token[:literal])
+
+    while @peek_token[:token] == :COMMA
+      next_token
+      next_token
+
+      parameters << Ast::Identifier.new(@current_token, @current_token[:literal])
+    end
+
+    return nil unless expect_peek(:RPAREN)
+
+    parameters
   end
 
   def current_precedence

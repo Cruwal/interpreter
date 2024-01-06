@@ -150,6 +150,7 @@ RSpec.describe Parser do
     end
   end
 
+  # TODO: fix the block_statement debug method
   context 'when parser a valid if expression' do
     let(:input) do
       <<-TEXT
@@ -161,6 +162,21 @@ RSpec.describe Parser do
       program = parser.parse_program
 
       expect(program.debug).to eql(['if(x < y) ["x;"] else ["y;"];'])
+    end
+  end
+
+  # TODO: fix the block_statement debug method
+  context 'when parser a valid function literal' do
+    let(:input) do
+      <<-TEXT
+        fn(x, y) { x + y }
+      TEXT
+    end
+
+    it 'expects the return statement to parsed correctly' do
+      program = parser.parse_program
+
+      expect(program.debug).to eql(['fn(x, y) {(x + y);};'])
     end
   end
 end
