@@ -12,6 +12,7 @@ require 'ast/prefix_expression'
 require 'ast/infix_expression'
 require 'ast/if_expression'
 require 'ast/function_literal'
+require 'ast/call_expression'
 
 class Parser
   attr_reader :program, :errors
@@ -46,7 +47,8 @@ class Parser
     PLUS: :parse_infix_expression,
     MINUS: :parse_infix_expression,
     SLASH: :parse_infix_expression,
-    ASTERISK: :parse_infix_expression
+    ASTERISK: :parse_infix_expression,
+    LPAREN: :parse_call_expression
   }.freeze
 
   INFIX_PRECEDENCES = {
@@ -57,7 +59,8 @@ class Parser
     PLUS: PRECEDENCE[:sum],
     MINUS: PRECEDENCE[:sum],
     SLASH: PRECEDENCE[:product],
-    ASTERISK: PRECEDENCE[:product]
+    ASTERISK: PRECEDENCE[:product],
+    LPAREN: PRECEDENCE[:call]
   }.freeze
 
   def initialize(lexer)
@@ -239,6 +242,12 @@ class Parser
     Ast::InfixExpression.new(current_token, left_expression, current_token[:literal], parse_expression(precedence))
   end
 
+  def parse_call_expression(function)
+    arguments = parse_call_arguments
+
+    Ast::CallExpression.new(@current_token, function, arguments)
+  end
+
   def parse_function_parameters
     if @peek_token[:token] == :RPAREN
       next_token
@@ -259,6 +268,28 @@ class Parser
     return nil unless expect_peek(:RPAREN)
 
     parameters
+  end
+
+  def parse_call_arguments
+    if @peek_token[:token] == :RPAREN
+      next_token
+      []
+    end
+
+    arguments = []
+    next_token
+    arguments << parse_expression(PRECEDENCE[:lowest])
+
+    while @peek_token[:token] == :COMMA
+      next_token
+      next_token
+
+      arguments << parse_expression(PRECEDENCE[:lowest])
+    end
+
+    return nil unless expect_peek(:RPAREN)
+
+    arguments
   end
 
   def current_precedence

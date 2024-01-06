@@ -179,4 +179,18 @@ RSpec.describe Parser do
       expect(program.debug).to eql(['fn(x, y) {(x + y);};'])
     end
   end
+
+  context 'when parser a valid call expression' do
+    let(:input) do
+      <<-TEXT
+        add(1, 2 * 3, 4 + 5)
+      TEXT
+    end
+
+    it 'expects the return statement to parsed correctly' do
+      program = parser.parse_program
+
+      expect(program.debug).to eql(['add(1, (2 * 3), (4 + 5));'])
+    end
+  end
 end
