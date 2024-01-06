@@ -1,4 +1,7 @@
-require_relative '../lib/lexer'
+$LOAD_PATH.unshift(File.expand_path('.', 'lib'))
+
+require 'lexer'
+require 'parser'
 
 begin
   loop do
@@ -6,12 +9,9 @@ begin
     input = $stdin.read
 
     lexer = Lexer.new(input)
-    loop do
-      token = lexer.next_token
-      puts token
+    program = Parser.new(lexer).parse_program
 
-      break if token[:token] == 'EOF'
-    end
+    puts program.debug
   end
 rescue Interrupt
   puts "\nStopping execution\n"
