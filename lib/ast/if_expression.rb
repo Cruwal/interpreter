@@ -4,7 +4,7 @@ module Ast
   class IfExpression
     include Expression
 
-    attr_reader :token, :condition, :consequece, :alternative
+    attr_reader :token, :condition, :consequence, :alternative
 
     def initialize(token, condition, consequence, alternative)
       @token = token

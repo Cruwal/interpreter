@@ -66,4 +66,16 @@ RSpec.describe Evaluator do
       expect(evaluator.eval_ast).to eql(7.0)
     end
   end
+
+  context 'when evaluate an if/else expression' do
+    let(:input) do
+      <<-TEXT
+        if (1 < 2) { 10 } else { 20 }
+      TEXT
+    end
+
+    it 'evaluates the expression correctly' do
+      expect(evaluator.eval_ast).to eql(10.0)
+    end
+  end
 end

@@ -21,6 +21,10 @@ class Evaluator
       left_node = eval_ast(node.left)
 
       eval_infix_expression(node.operator, left_node, right_node)
+    when Ast::BlockStatement
+      eval_statements(node.statements)
+    when Ast::IfExpression
+      eval_if_expression(node)
     end
   end
 
@@ -57,20 +61,32 @@ class Evaluator
     -1 * node
   end
 
- def eval_infix_expression(operator, left_node, right_node)
-   number_expression = left_node.is_a?(Float) && right_node.is_a?(Float)
+  def eval_infix_expression(operator, left_node, right_node)
+    number_expression = left_node.is_a?(Float) && right_node.is_a?(Float)
 
-   return eval_number_infix_expression(operator, left_node, right_node) if number_expression
+    return eval_number_infix_expression(operator, left_node, right_node) if number_expression
 
-   case operator
-   when '=='
-     left_node == right_node
-   when '!='
-     left_node != right_node
-   end
- end
+    case operator
+    when '=='
+      left_node == right_node
+    when '!='
+      left_node != right_node
+    end
+  end
 
- def eval_number_infix_expression(operator, left_node, right_node)
-   left_node.send(operator, right_node)
- end
+  def eval_number_infix_expression(operator, left_node, right_node)
+    left_node.send(operator, right_node)
+  end
+
+  def eval_if_expression(node)
+    condition = eval_ast(node.condition)
+
+    evaluated_condition = condition ? true : false
+
+    if evaluated_condition
+      eval_ast(node.consequence)
+    elsif !node.alternative.nil?
+      eval_ast(node.alternative)
+    end
+  end
 end
