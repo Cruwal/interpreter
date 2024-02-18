@@ -1,4 +1,14 @@
 class Evaluator
+  class ReturnError < StandardError
+    attr_reader :expression
+
+    def initialize(expression)
+      @expression = expression
+
+      super
+    end
+  end
+
   def initialize(ast)
     @ast = ast
   end
@@ -6,7 +16,7 @@ class Evaluator
   def eval_ast(node = @ast)
     case node
     when Ast::Program
-      eval_statements(node.statements)
+      eval_program(node.statements)
     when Ast::ExpressionStatement
       eval_ast(node.expression)
     when Ast::IntegerLiteral
@@ -22,19 +32,39 @@ class Evaluator
 
       eval_infix_expression(node.operator, left_node, right_node)
     when Ast::BlockStatement
-      eval_statements(node.statements)
+      eval_block_statement(node.statements)
     when Ast::IfExpression
       eval_if_expression(node)
+    when Ast::ReturnStatement
+      value = eval_ast(node.expression)
+
+      raise ReturnError, value
     end
   end
 
   private
 
-  def eval_statements(statements)
+  def eval_program(statements)
     response = nil
 
     statements.each do |statement|
       response = eval_ast(statement)
+    rescue ReturnError => e
+      response = e.expression
+
+      break
+    end
+
+    response
+  end
+
+  def eval_block_statement(statements)
+    response = nil
+
+    statements.each do |statement|
+      response = eval_ast(statement)
+    rescue ReturnError => e
+      raise e
     end
 
     response

@@ -78,4 +78,33 @@ RSpec.describe Evaluator do
       expect(evaluator.eval_ast).to eql(10.0)
     end
   end
+
+  context 'when evaluate a return statement' do
+    let(:input) do
+      <<-TEXT
+        9; return 2 * 5; 9;
+      TEXT
+    end
+
+    it 'evaluates the expression correctly' do
+      expect(evaluator.eval_ast).to eql(10.0)
+    end
+
+    context 'when return is inside of a block' do
+      let(:input) do
+        <<~TEXT
+          if (10 > 1) {
+            if (10 > 1) {
+              return 20;
+            }
+            return 1;
+          }
+        TEXT
+      end
+
+      it 'evaluates the expression correctly' do
+        expect(evaluator.eval_ast).to eql(20.0)
+      end
+    end
+  end
 end

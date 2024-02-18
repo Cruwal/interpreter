@@ -143,7 +143,7 @@ class Parser
 
     while @peek_token[:token] != :SEMICOLON && precedence < peek_precedence
       infix = INFIX_FUNCTIONS[@peek_token[:token]]
-      return left if infix.nil?
+      return left_expression if infix.nil?
 
       next_token
 
